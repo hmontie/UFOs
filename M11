@@ -1,0 +1,85 @@
+// M11.js  
+
+/*
+* Modules 11 control algorithm it's used
+* Used by the danish goverment to validate CPR numbers (social security numbers).
+* It works by having a number list and giving them each a weight from 2 to 7 then 
+* multiplying them to then divide the number with the mod (11 usually) 
+* to see if the reminder is 0.
+*
+* the modules operator (%) in javascript takes bad values.
+* where KEY % 11 = 6 but KEY % 12 = 0 but in python KEY % 11 = 0??
+*/
+
+// Array with Modules 11 values
+// Hardcoded implementation limits input with the length 18. 
+const optarray = [2, 3, 4, 5, 6, 7, 2 ,3, 4, 5 ,6 ,7, 2, 3, 4, 5, 6, 7];
+
+class M11 extends Array {
+    constructor(carray = [], mod = 11, ...args) {
+        super(args);
+        this.pop();
+
+        if (carray.length === optarray.length) {
+            carray.forEach(v => this.push(v));
+        } else {
+            let r = M11.gen();
+            
+            while (!M11.check(r, mod)) {
+                r = M11.gen();
+            }
+
+            r.forEach(v => this.push(v));
+        }
+    }
+
+    static gen () {
+        var array = [];
+
+        while (array.length !== optarray.length) {
+            array.push(Math.floor(Math.random() * (9 - 1 + 1)) + 1);
+        }
+
+        return array;
+    }
+
+    static check (carray, mod) {
+        let o = [];
+
+        for (var i = 0, len = carray.length; i < len; i++) {
+            o.push(carray[i] * optarray[i]);
+        }
+
+        // Check if it's dividable with mod (11)
+        var sum = o.reduce((a, b) => a + b, 0) / mod;
+
+        if(Number(sum) === sum && sum % 1 === 0){
+            return false;
+        }
+
+        return true;
+    }
+
+    // Either takes Number[] and converts it to a String
+    // Or it takes a String and converts it to Number[]
+    static convert (numbers) {
+        let output = undefined;
+
+        if (typeof numbers === 'number' && numbers.toString().length <= 18) numbers = numbers.toString();
+        if (typeof numbers === 'string' && !isNaN(numbers)) {
+            output = [];
+            numbers.split("").forEach(v => output.push(Number(v)) );
+        } else if (typeof numbers === 'object' && !isNaN(numbers.length) && numbers.length <= 18) {
+            output = "";
+
+            for (let i = 0; i < numbers.length; i++) {
+                if (isNaN(numbers[i])) return;
+                output += numbers[i].toString();
+            }
+        }
+
+        return output;
+    }
+}
+
+module.exports = M11;
